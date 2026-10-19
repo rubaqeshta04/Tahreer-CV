@@ -15,8 +15,8 @@ export function Logo({ className = "" }: LogoProps) {
     <img
       className={`site-logo ${theme === "dark" ? "site-logo-dark" : ""} ${className}`}
       src={theme === "dark" ? darkLogo : lightLogo}
-      width="92"
-      height="54"
+      width="108"
+      height="64"
       alt={
         locale === "ar"
           ? "شعار تحرير — عدسة مكبّرة وأعمدة بيانية صاعدة"

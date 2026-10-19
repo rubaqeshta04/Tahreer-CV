@@ -12,11 +12,18 @@ export function AboutSection() {
     <ScrollReveal className="section about-section" id="about">
       <Container>
         <div className="about-grid">
-          <SectionHeading
-            eyebrow={copy.about.eyebrow}
-            title={copy.about.title}
-            description={copy.about.description}
-          />
+          <div className="about-copy">
+            <SectionHeading
+              eyebrow={copy.about.eyebrow}
+              title={copy.about.title}
+              description={copy.about.description}
+            />
+            <ul className="about-highlights">
+              {copy.about.highlights.map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
+            </ul>
+          </div>
           <ScrollPop delay={0.22}>
             <div className="education-panel">
               <ScrollPop>

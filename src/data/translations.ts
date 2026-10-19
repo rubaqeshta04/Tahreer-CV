@@ -7,7 +7,8 @@ interface PortfolioCopy {
   filters: PortfolioFilter[];
   projects: Record<
     string,
-    Pick<PortfolioProject, "title" | "categoryLabel" | "description" | "assetLabel">
+    Pick<PortfolioProject, "title" | "categoryLabel" | "description" | "assetLabel"> &
+      Partial<Pick<PortfolioProject, "assetNote">>
   >;
   emptyTitle: string;
   emptyDescription: string;
@@ -66,11 +67,9 @@ export interface SiteCopy {
     name: string;
     surname: string;
     role: string;
-    specialist: string;
     summary: string;
     portfolioCta: string;
     contactCta: string;
-    confidence: string[];
     previewLabel: string;
     searchLabel: string;
     noLink: string;
@@ -81,7 +80,8 @@ export interface SiteCopy {
   about: {
     eyebrow: string;
     title: string;
-    description: string;
+    description: string[];
+    highlights: string[];
     educationTitle: string;
     education: string[];
   };
@@ -89,7 +89,7 @@ export interface SiteCopy {
     eyebrow: string;
     title: string;
     description: string;
-    items: Skill[];
+    groups: { title: string; items: Skill[] }[];
   };
   experience: {
     eyebrow: string;
@@ -108,68 +108,100 @@ export interface SiteCopy {
   whatsappMessage: string;
 }
 
-const arabicSkills: Skill[] = [
-  { title: "التدقيق التقني", description: "مراجعة أساسيات الموقع ورصد فرص التحسين التقني.", icon: "scan" },
-  { title: "تحسين الصفحات", description: "تهيئة المحتوى والعناوين والعناصر الداخلية للصفحات.", icon: "file" },
-  { title: "البحث عن الكلمات", description: "بحث الكلمات المفتاحية وتحليل نية البحث والمنافسة.", icon: "search" },
-  { title: "Google Search Console", description: "متابعة الفهرسة وبيانات الظهور وأداء البحث.", icon: "chart" },
-  { title: "Google Analytics", description: "قراءة مؤشرات الزيارات وسلوك المستخدمين.", icon: "activity" },
-  { title: "Google Business Profile", description: "إدارة وتحسين الظهور في نتائج البحث المحلية.", icon: "map" },
-  { title: "سرعة الصفحات", description: "التعاون على تحسين سرعة الصفحات وتجربة المستخدم.", icon: "gauge" },
-  { title: "الروابط الداخلية والخارجية", description: "بناء هيكل روابط واضح يدعم اكتشاف المحتوى.", icon: "link" },
-  { title: "تحليل المنافسين", description: "تحليل المنافسة واستخراج فرص محتوى قابلة للتنفيذ.", icon: "target" },
+const arabicSkillGroups: { title: string; items: Skill[] }[] = [
+  {
+    title: "الفهم والتحليل",
+    items: [
+      { title: "التدقيق التقني", description: "فحص الموقع بالكامل واستخراج المشكلات التي تعيق الأرشفة والظهور.", icon: "scan" },
+      { title: "بحث الكلمات المفتاحية", description: "اكتشاف ما يبحث عنه جمهورك فعلاً، وبأي صيغة، وبأي نية.", icon: "search" },
+      { title: "تحليل المنافسين", description: "معرفة من يتصدر مجالك ولماذا، وأين الفرص التي تركوها.", icon: "target" },
+    ],
+  },
+  {
+    title: "التنفيذ والتحسين",
+    items: [
+      { title: "تحسين الصفحات", description: "ضبط العناوين والوصف والمحتوى ليخدم الزائر ومحرك البحث معاً.", icon: "file" },
+      { title: "الروابط الداخلية والخارجية", description: "بناء شبكة روابط تقود الزائر ومحرك البحث إلى أهم صفحاتك.", icon: "link" },
+      { title: "سرعة الصفحات", description: "تسريع التحميل وتحسين تجربة المستخدم على الجوال والكمبيوتر.", icon: "gauge" },
+    ],
+  },
+  {
+    title: "القياس والمتابعة",
+    items: [
+      { title: "Google Search Console", description: "متابعة الأرشفة والظهور ومعالجة الأخطاء أولاً بأول.", icon: "chart" },
+      { title: "Google Analytics", description: "قراءة سلوك الزوار وتحويل الأرقام إلى قرارات واضحة.", icon: "activity" },
+      { title: "Google Business Profile", description: "تحسين حضورك في نتائج البحث المحلية والخرائط.", icon: "map" },
+    ],
+  },
 ];
 
-const englishSkills: Skill[] = [
-  { title: "Technical SEO Audits", description: "Reviewing site foundations and identifying technical opportunities.", icon: "scan" },
-  { title: "On-page Optimization", description: "Optimizing page content, headings, and on-page elements.", icon: "file" },
-  { title: "Keyword Research", description: "Researching keywords, search intent, and competition.", icon: "search" },
-  { title: "Google Search Console", description: "Monitoring indexing, search visibility, and performance.", icon: "chart" },
-  { title: "Google Analytics", description: "Reading traffic indicators and user behavior.", icon: "activity" },
-  { title: "Google Business Profile", description: "Managing and improving visibility in local search results.", icon: "map" },
-  { title: "Page Speed Collaboration", description: "Collaborating on page speed and user experience improvements.", icon: "gauge" },
-  { title: "Internal & External Links", description: "Building a clear linking structure that supports content discovery.", icon: "link" },
-  { title: "Competitor Analysis", description: "Analyzing competitors and finding actionable content opportunities.", icon: "target" },
+const englishSkillGroups: { title: string; items: Skill[] }[] = [
+  {
+    title: "Understand & Analyze",
+    items: [
+      { title: "Technical SEO Audit", description: "Review the entire website and identify issues that hinder indexing and visibility.", icon: "scan" },
+      { title: "Keyword Research", description: "Discover what your audience actually searches for, how they phrase it, and their intent.", icon: "search" },
+      { title: "Competitor Analysis", description: "See who leads your field and why, and uncover the opportunities they have missed.", icon: "target" },
+    ],
+  },
+  {
+    title: "Implement & Optimize",
+    items: [
+      { title: "On-page Optimization", description: "Refine titles, descriptions, and content to serve both visitors and search engines.", icon: "file" },
+      { title: "Internal & External Links", description: "Build a link network that guides visitors and search engines to your most important pages.", icon: "link" },
+      { title: "Page Speed", description: "Improve loading speed and user experience on mobile and desktop.", icon: "gauge" },
+    ],
+  },
+  {
+    title: "Measure & Monitor",
+    items: [
+      { title: "Google Search Console", description: "Monitor indexing and visibility, and resolve issues as they arise.", icon: "chart" },
+      { title: "Google Analytics", description: "Understand visitor behavior and turn data into clear decisions.", icon: "activity" },
+      { title: "Google Business Profile", description: "Improve your presence in local search results and Maps.", icon: "map" },
+    ],
+  },
 ];
 
 const arabicExperience: Experience[] = [
-  { period: "سبتمبر 2024 – الآن", role: "أخصائية تحسين محركات البحث", organization: "Taiff", description: "العمل على تحسين محركات البحث ضمن فريق Taiff." },
-  { period: "يونيو 2023 – الآن", role: "أخصائية تحسين محركات البحث مستقلة", organization: "عمل حر", description: "تقديم خدمات تحسين محركات البحث لعملاء ومشاريع متنوعة." },
-  { period: "فبراير 2021 – 2022", role: "أخصائية تحسين محركات البحث", organization: "Clickatco", description: "خبرة عملية في تنفيذ أعمال تحسين محركات البحث." },
-  { period: "نوفمبر 2019 – ديسمبر 2020", role: "بداية العمل المهني في SEO", organization: "خبرة مهنية", description: "بداية المسيرة المهنية في مجال تحسين محركات البحث." },
-  { period: "2019 – 2020", role: "تحسين محركات البحث للمتاجر", organization: "مشاريع مستقلة", description: "متاجر Joomla في الإمارات، ومتجر الحبيب في السعودية، ومتجر الحواج." },
-  { period: "مايو 2019 – يوليو 2019", role: "تحسين مقالات SEO", organization: "منها Shantitsafar", description: "تحسين مقالات لمحركات البحث، بما في ذلك مقالات Shantitsafar." },
+  { period: "سبتمبر 2024 – الآن", role: "أخصائية تحسين محركات البحث", organization: "Taiff", description: "أعمل ضمن فريق Taiff على رفع ظهور المواقع وتطوير محتواها." },
+  { period: "يونيو 2023 – الآن", role: "مستشارة مستقلة", organization: "عمل حر", description: "أخدم عملاء من قطاعات متنوعة، من التدقيق التقني إلى كتابة المحتوى العربي." },
+  { period: "2023 – 2024", role: "أخصائية تحسين محركات البحث", organization: "شابو", description: "ساهمت مع فريق شابو في تحسين الظهور وبناء محتوى يدعمه." },
+  { period: "فبراير 2021 – 2022", role: "أخصائية تحسين محركات البحث", organization: "Clickatoo", description: "نفّذت أعمالاً عملية على مواقع العملاء، من تحسين الصفحات إلى المحتوى." },
+  { period: "نوفمبر 2019 – ديسمبر 2020", role: "بداية المسيرة", organization: "خبرة مهنية", description: "أول خطواتي المهنية، وفيها بنيت أساس خبرتي العملية." },
+  { period: "2019 – 2020", role: "المتاجر الإلكترونية", organization: "مشاريع مستقلة", description: "رفعت ظهور متاجر في الإمارات والسعودية، منها متجر على Joomla ومتجر الحبيب ومتجر الحواج." },
+  { period: "مايو – يوليو 2019", role: "تحسين المقالات", organization: "Shantitsafar", description: "عملت على مقالات لتتوافق مع محركات البحث، منها مقالات Shantitsafar." },
 ];
 
 const englishExperience: Experience[] = [
-  { period: "September 2024 – Present", role: "SEO Specialist", organization: "Taiff", description: "Working on search engine optimization as part of the Taiff team." },
-  { period: "June 2023 – Present", role: "Freelance SEO Specialist", organization: "Freelance", description: "Providing SEO services to a range of clients and projects." },
-  { period: "February 2021 – 2022", role: "SEO Specialist", organization: "Clickatco", description: "Hands-on experience delivering search engine optimization work." },
-  { period: "November 2019 – December 2020", role: "Began Professional SEO Work", organization: "Professional Experience", description: "The beginning of a professional career in search engine optimization." },
-  { period: "2019 – 2020", role: "SEO for Online Stores", organization: "Freelance Projects", description: "Joomla stores in the UAE, Al Habib store in Saudi Arabia, and Al Hawaj store." },
-  { period: "May 2019 – July 2019", role: "SEO Article Optimization", organization: "Including Shantitsafar", description: "Optimized articles for search engines, including articles for Shantitsafar." },
+  { period: "September 2024 – Present", role: "SEO Specialist", organization: "Taiff", description: "I work with the Taiff team to increase website visibility and develop its content." },
+  { period: "June 2023 – Present", role: "Independent Consultant", organization: "Freelance", description: "I support clients across diverse industries, from technical audits to Arabic content writing." },
+  { period: "2023 – 2024", role: "SEO Specialist", organization: "Shaboo", description: "Contributed to improving visibility and building supporting content with the Shaboo team." },
+  { period: "February 2021 – 2022", role: "SEO Specialist", organization: "Clickatoo", description: "Delivered hands-on work across client websites, from on-page optimization to content." },
+  { period: "November 2019 – December 2020", role: "Career Beginnings", organization: "Professional Experience", description: "My first professional steps, where I built the foundation of my practical experience." },
+  { period: "2019 – 2020", role: "E-commerce Stores", organization: "Freelance Projects", description: "Improved visibility for stores in the UAE and Saudi Arabia, including a Joomla store, Al Habib, and Al Hawaj." },
+  { period: "May – July 2019", role: "Article Optimization", organization: "Shantitsafar", description: "Optimized articles for search engines, including articles for Shantitsafar." },
 ];
 
 const arabicPortfolioProjects = {
-  markat: { title: "Markat.sa", categoryLabel: "كلمات مستهدفة", description: "أمثلة الكلمات المستهدفة للمشروع كما وردت ضمن الخبرات.", assetLabel: "لقطة ترتيب البحث" },
-  newtechstore: { title: "Newtechstore", categoryLabel: "كلمة مستهدفة", description: "مثال كلمة مستهدفة لمتجر Newtechstore.", assetLabel: "لقطة ترتيب البحث" },
-  flottlife: { title: "Flottlife", categoryLabel: "مشروع SEO", description: "مشروع مذكور ضمن أمثلة الأعمال في تحسين محركات البحث.", assetLabel: "لقطة من المشروع" },
-  "al-azzam": { title: "متجر العزام", categoryLabel: "كلمة مستهدفة", description: "مثال كلمة مستهدفة لمتجر العزام.", assetLabel: "لقطة ترتيب البحث" },
-  "sada-law": { title: "مكتب صدى للمحاماة", categoryLabel: "محتوى SEO", description: "مقال قانوني عن شروط الإقامة المميزة في السعودية.", assetLabel: "لقطة من المشروع" },
+  markat: { title: "Markat.sa", categoryLabel: "ترتيب جوجل", description: "المركز الأول على كلمة «ماركات». حضور في الصفحة الأولى على كلمات تجارية عالية البحث في السعودية، منها «ماركات» و«شنطة كوتش».", assetLabel: "اطّلع على اللقطة ←", assetNote: "لقطة شاشة، جوجل السعودية" },
+  newtechstore: { title: "Newtechstore", categoryLabel: "ترتيب جوجل", description: "المركز الأول على «لابتوب قيمنج». صفحة تصنيف تتصدر نتائج جوجل لكلمة بنية شراء واضحة، مع كلمات أخرى في المراكز الأولى.", assetLabel: "اطّلع على اللقطة ←", assetNote: "لقطة شاشة، جوجل السعودية" },
+  flottlife: { title: "Flottlife", categoryLabel: "ترتيب جوجل", description: "ظهور صفحات المنتجات والتصنيفات. صفحات متجر Flottlife تظهر في نتائج جوجل على كلمات متعددة، من الاسم التجاري إلى صفحات المنتجات.", assetLabel: "اطّلع على اللقطة ←", assetNote: "لقطة شاشة، جوجل السعودية" },
+  "al-azzam": { title: "متجر العزام", categoryLabel: "كلمة مستهدفة", description: "مثال كلمة مستهدفة لمتجر العزام.", assetLabel: "اطّلع على اللقطة ←", assetNote: "لقطة شاشة، جوجل السعودية" },
+  "sada-law": { title: "مكتب صدى للمحاماة", categoryLabel: "محتوى SEO", description: "مقال قانوني عن شروط الإقامة المميزة في السعودية.", assetLabel: "اطّلع على اللقطة ←", assetNote: "لقطة شاشة، جوجل السعودية" },
   "drive7-audit": { title: "تدقيق SEO — Drive7", categoryLabel: "تدقيق SEO", description: "مراجعة تدقيق SEO مذكورة ضمن أمثلة الأعمال.", assetLabel: "فتح تقرير التدقيق PDF" },
   "seo-action-plan": { title: "خطة عمل SEO", categoryLabel: "خطة عمل", description: "خطة عمل بصيغة XLSX مذكورة كأصل اختياري.", assetLabel: "تنزيل خطة العمل XLSX" },
-  "traffic-growth": { title: "Traffic Growth & ROI", categoryLabel: "نمو الزيارات", description: "نتائج حقيقية لمضاعفة الزيارات العضوية (Organic Traffic) وتحقيق عائد استثمار مرتفع خلال 3 شهور فقط.", assetLabel: "نمو الزيارات والعائد على الاستثمار" },
+  "traffic-growth": { title: "Traffic Growth & ROI", categoryLabel: "نمو الزيارات", description: "نتائج حقيقية لمضاعفة الزيارات العضوية (Organic Traffic) وتحقيق عائد استثمار مرتفع خلال 3 شهور فقط.", assetLabel: "اطّلع على اللقطة ←", assetNote: "لقطة شاشة، جوجل السعودية" },
 };
 
 const englishPortfolioProjects = {
-  markat: { title: "Markat.sa", categoryLabel: "Target keywords", description: "Examples of target keywords for this project, as listed in the experience.", assetLabel: "Search ranking screenshot" },
-  newtechstore: { title: "Newtechstore", categoryLabel: "Target keyword", description: "An example target keyword for Newtechstore.", assetLabel: "Search ranking screenshot" },
-  flottlife: { title: "Flottlife", categoryLabel: "SEO project", description: "A project mentioned among the SEO work examples.", assetLabel: "Project screenshot" },
-  "al-azzam": { title: "Al Azzam Store", categoryLabel: "Target keyword", description: "An example target keyword for Al Azzam Store.", assetLabel: "Search ranking screenshot" },
-  "sada-law": { title: "Sada Law Firm", categoryLabel: "SEO content", description: "A legal article about Premium Residency requirements in Saudi Arabia.", assetLabel: "Project screenshot" },
+  markat: { title: "Markat.sa", categoryLabel: "Google ranking", description: "Ranked first for “ماركات” (brands). Reached page one for high-search commercial terms in Saudi Arabia, including “ماركات” and “شنطة كوتش” (Coach bag).", assetLabel: "View screenshot →", assetNote: "Screenshot, Google Saudi Arabia" },
+  newtechstore: { title: "Newtechstore", categoryLabel: "Google ranking", description: "Ranked first for “لابتوب قيمنج” (gaming laptop). A category page leads Google results for a high-purchase-intent keyword, alongside other top-ranking terms.", assetLabel: "View screenshot →", assetNote: "Screenshot, Google Saudi Arabia" },
+  flottlife: { title: "Flottlife", categoryLabel: "Google ranking", description: "Product and category pages appear in Google results for multiple queries, from the brand name to individual product pages.", assetLabel: "View screenshot →", assetNote: "Screenshot, Google Saudi Arabia" },
+  "al-azzam": { title: "Al Azzam Store", categoryLabel: "Target keyword", description: "An example target keyword for Al Azzam Store.", assetLabel: "View screenshot →", assetNote: "Screenshot, Google Saudi Arabia" },
+  "sada-law": { title: "Sada Law Firm", categoryLabel: "SEO content", description: "A legal article about Premium Residency requirements in Saudi Arabia.", assetLabel: "View screenshot →", assetNote: "Screenshot, Google Saudi Arabia" },
   "drive7-audit": { title: "SEO Audit — Drive7", categoryLabel: "SEO audit", description: "A Drive7 SEO audit is listed among the work examples.", assetLabel: "Open SEO audit PDF" },
   "seo-action-plan": { title: "SEO Action Plan", categoryLabel: "Action plan", description: "An XLSX action plan is listed as an optional asset.", assetLabel: "Download XLSX action plan" },
-  "traffic-growth": { title: "Traffic Growth & ROI", categoryLabel: "Traffic growth", description: "Real results: doubling organic traffic and achieving a high return on investment in just 3 months.", assetLabel: "Traffic growth and return on investment" },
+  "traffic-growth": { title: "Traffic Growth & ROI", categoryLabel: "Traffic growth", description: "Real results: doubling organic traffic and achieving a high return on investment in just 3 months.", assetLabel: "View screenshot →", assetNote: "Screenshot, Google Saudi Arabia" },
 };
 
 export const siteCopy: Record<"ar" | "en", SiteCopy> = {
@@ -187,15 +219,13 @@ export const siteCopy: Record<"ar" | "en", SiteCopy> = {
     languageLabel: "English",
     menuLabel: { open: "فتح القائمة", close: "إغلاق القائمة" },
     hero: {
-      intro: "تحسين محركات البحث، برؤية استراتيجية",
+      intro: "حين يبحث عنك عميلك، من يظهر له؟",
       name: "تحرير حامد",
       surname: "حمدونة",
-      role: "خبيرة تحسين محركات البحث",
-      specialist: "SEO Specialist",
-      summary: "أمتلك خبرة خمس سنوات في تحسين محركات البحث، من التدقيق التقني وبحث الكلمات المفتاحية إلى تحسين المحتوى وبناء حضور رقمي أكثر وضوحًا.",
-      portfolioCta: "شاهد أعمالي",
-      contactCta: "احصل على استشارة",
-      confidence: ["أكثر من 5 سنوات من الخبرة في بناء استراتيجيات SEO متكاملة لتحويل موقعك إلى النتيجة الأولى في جوجل", "التدقيق التقني", "تحسين المحتوى"],
+      role: "خبيرة SEO تجعل موقعك يُرى… ثم يُختار",
+      summary: "خمس سنوات قضيتها بين الأرقام والكلمات، أحوّل تقارير الأداء الجافة إلى محتوى يتحدث بلغة جمهورك، ويصل إلى المرتبة التي يستحقها نشاطك التجاري. أبدأ من التدقيق التقني وأصل إلى القصة التي تجعل الزائر يبقى.",
+      portfolioCta: "اطّلع على قصص النجاح",
+      contactCta: "لنتحدث عن موقعك",
       previewLabel: "معاينة توضيحية لنتيجة بحث",
       searchLabel: "بحث",
       noLink: "معاينة توضيحية — لا يوجد رابط فعلي",
@@ -205,27 +235,35 @@ export const siteCopy: Record<"ar" | "en", SiteCopy> = {
     },
     about: {
       eyebrow: "نبذة عني",
-      title: "أربط بين المحتوى والبحث، لأصنع حضورًا يستحق الظهور.",
-      description: "أعمل على تحويل أهداف الأعمال إلى خطوات SEO عملية؛ من فهم الجمهور والكلمات التي يبحث عنها، إلى تحسين الصفحات وقياس الأداء.",
+      title: "أؤمن أن وراء كل بحثٍ إنساناً يبحث عن إجابة",
+      description: [
+        "بدأت رحلتي مع تحسين محركات البحث بفضول بسيط: لماذا يظهر موقع في الصدارة ويختفي آخر رغم جودته؟ ومع السنوات صار هذا الفضول شغفاً، وصار الجواب عندي واضحاً: الظهور لا يأتي من الحيل التقنية وحدها، بل من فهم الإنسان الذي يكتب الكلمات في خانة البحث.",
+        "أجمع بين دقة المحلل وحسّ الكاتب: أفحص موقعك تقنياً، وأصغي لما يبحث عنه جمهورك فعلاً، ثم أكتب محتوى عربياً يُقنع القارئ قبل أن يرضي المحرك. لا قوالب جاهزة عندي، فلكل نشاط تجاري قصة وجمهور وطريق خاص إلى الصفحة الأولى.",
+      ],
+      highlights: [
+        "أفهم الإنسان قبل الخوارزمية، فالمحتوى يبدأ من نية الباحث",
+        "أكتب بالعربية لجمهور عربي، بلغة تشبهه وتخاطبه",
+        "أقيس كل شيء، فالإبداع عندي يمشي جنباً إلى جنب مع الأرقام",
+      ],
       educationTitle: "التعليم والشهادات",
       education: ["بكالوريوس اللغة العربية", "دبلوم التسويق الرقمي — مؤسسة The Gateway Foundation", "الرخصة الدولية لقيادة الحاسب الآلي (ICDL)"],
     },
     skills: {
-      eyebrow: "مجالات الخبرة",
-      title: "أدوات ومهارات لبناء أساس قوي",
-      description: "من البنية التقنية إلى استراتيجية المحتوى، أتعامل مع تفاصيل تحسين البحث كمنظومة واحدة.",
-      items: arabicSkills,
+      eyebrow: "ماذا أفعل لموقعك",
+      title: "من التدقيق إلى النتائج: مهام أنجزها بدقة",
+      description: "رحلة متكاملة تبدأ بفحص موقعك وتنتهي بقياس أثر كل خطوة، بدون عشوائية وبدون تخمين.",
+      groups: arabicSkillGroups,
     },
     experience: {
       eyebrow: "المسيرة المهنية",
-      title: "خبرة تنمو مع كل مشروع",
-      description: "محطات مهنية في تحسين محركات البحث، والعمل مع المتاجر والمحتوى الرقمي.",
+      title: "سبع محطات، ومسار واحد: أن يُرى كل موقع أعمل عليه، وأن يُختار.",
+      description: "مسيرة تجمع بين العمل ضمن الفرق والاستشارات المستقلة، من التدقيق التقني إلى المحتوى العربي.",
       items: arabicExperience,
     },
     portfolio: {
       eyebrow: "نماذج من الأعمال",
       title: "عمل مدروس، لا وعود جاهزة",
-      description: "أمثلة على المشاريع والكلمات المذكورة ضمن الخبرات. لا تُعرض نتائج أو أرقام غير موثقة.",
+      description: "لقطات حقيقية من ترتيب الكلمات في نتائج جوجل السعودية. ما ترونه هنا هو ما تحقق فعلاً.",
       filters: [
         { id: "all", label: "كل الأعمال" }, { id: "rankings", label: "ترتيب Google" },
         { id: "audits", label: "التدقيقات" }, { id: "plans", label: "الخطط" },
@@ -295,15 +333,13 @@ export const siteCopy: Record<"ar" | "en", SiteCopy> = {
     languageLabel: "العربية",
     menuLabel: { open: "Open menu", close: "Close menu" },
     hero: {
-      intro: "Search engine optimization, guided by strategy",
+      intro: "When your customer searches, who shows up?",
       name: "Tahreer Hamed",
       surname: "Hamadouna",
-      role: "SEO Specialist",
-      specialist: "SEO Specialist",
-      summary: "I have five years of experience in search engine optimization, from technical audits and keyword research to content optimization and building a clearer digital presence.",
-      portfolioCta: "View my work",
-      contactCta: "Get a consultation",
-      confidence: ["Over 5 years of experience building integrated SEO strategies to turn your website into Google's first result", "Technical audits", "Content optimization"],
+      role: "SEO expert who gets your website seen—and chosen",
+      summary: "Five years spent between numbers and words, turning dry performance reports into content that speaks your audience's language and earns your business the rankings it deserves. I start with technical audits and shape the story that keeps visitors engaged.",
+      portfolioCta: "Explore success stories",
+      contactCta: "Let's talk about your website",
       previewLabel: "Illustrative search result preview",
       searchLabel: "Search",
       noLink: "Illustrative preview — no actual URL",
@@ -313,27 +349,35 @@ export const siteCopy: Record<"ar" | "en", SiteCopy> = {
     },
     about: {
       eyebrow: "About me",
-      title: "I connect content and search to build a presence worth discovering.",
-      description: "I turn business goals into practical SEO steps—from understanding audiences and their searches to optimizing pages and measuring performance.",
+      title: "I believe every search comes from a person looking for an answer",
+      description: [
+        "My journey in SEO began with a simple curiosity: why does one website rank at the top while another disappears despite its quality? Over the years, that curiosity became a passion, and the answer became clear: visibility does not come from technical tricks alone, but from understanding the person typing into the search box.",
+        "I bring together an analyst's precision and a writer's instinct: I audit your website, listen to what your audience is really searching for, then write Arabic content that persuades the reader before pleasing the search engine. I don't use ready-made templates; every business has its own story, audience, and path to page one.",
+      ],
+      highlights: [
+        "I understand people before algorithms; content starts with search intent.",
+        "I write in Arabic for Arabic-speaking audiences, in a voice that feels familiar.",
+        "I measure everything; creativity and data go hand in hand.",
+      ],
       educationTitle: "Education & Certifications",
       education: ["Bachelor’s Degree in Arabic Language", "Digital Marketing Diploma — The Gateway Foundation", "International Computer Driving Licence (ICDL)"],
     },
     skills: {
-      eyebrow: "Areas of expertise",
-      title: "Skills and tools for a strong foundation",
-      description: "From technical foundations to content strategy, I approach search optimization as one connected discipline.",
-      items: englishSkills,
+      eyebrow: "What I do for your website",
+      title: "From audit to results: work delivered with precision",
+      description: "A complete journey that starts with reviewing your website and ends with measuring the impact of every step—with no guesswork or random tactics.",
+      groups: englishSkillGroups,
     },
     experience: {
       eyebrow: "Career journey",
-      title: "Experience that grows with every project",
-      description: "Professional milestones in SEO, working with online stores and digital content.",
+      title: "Seven milestones, one purpose: helping every website I work on get seen—and chosen.",
+      description: "A career spanning in-house teamwork and independent consulting, from technical audits to Arabic content.",
       items: englishExperience,
     },
     portfolio: {
       eyebrow: "Selected work",
       title: "Thoughtful work, not empty promises",
-      description: "Examples of projects and keywords mentioned in the experience. No unverified results or figures are presented.",
+      description: "Real screenshots of keyword rankings in Google Saudi Arabia. What you see here is what was actually achieved.",
       filters: [
         { id: "all", label: "All work" }, { id: "rankings", label: "Google rankings" },
         { id: "audits", label: "SEO audits" }, { id: "plans", label: "Action plans" },

@@ -16,9 +16,20 @@ export function SkillsSection() {
           description={copy.skills.description}
           centered
         />
-        <div className="skills-grid">
-          {copy.skills.items.map((skill, index) => (
-            <SkillCard key={skill.title} skill={skill} delay={index * 0.2} />
+        <div className="skills-groups">
+          {copy.skills.groups.map((group, groupIndex) => (
+            <section className="skills-group" key={group.title}>
+              <h3>{group.title}</h3>
+              <div className="skills-grid">
+                {group.items.map((skill, itemIndex) => (
+                  <SkillCard
+                    key={skill.title}
+                    skill={skill}
+                    delay={(groupIndex * group.items.length + itemIndex) * 0.2}
+                  />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       </Container>

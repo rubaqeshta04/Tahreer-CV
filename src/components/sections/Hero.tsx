@@ -68,7 +68,7 @@ export function Hero() {
               </motion.span>
             ))}
           </motion.h1>
-          <h2>{hero.role} <span dir="ltr">({hero.specialist})</span></h2>
+          <h2>{hero.role}</h2>
           <p className="hero-summary">{hero.summary}</p>
           <div className="hero-actions">
             <MagneticButton href="#portfolio">
@@ -78,12 +78,6 @@ export function Hero() {
               {hero.contactCta}
             </MagneticButton>
           </div>
-          <ul
-            className="confidence-strip flex flex-col"
-            aria-label={locale === "ar" ? "ملخص الخبرة" : "Experience highlights"}
-          >
-            {hero.confidence.map((point) => <li key={point}>{point}</li>)}
-          </ul>
         </div>
         <div className="hero-visual">
           <div className="chart-backdrop" aria-hidden="true">

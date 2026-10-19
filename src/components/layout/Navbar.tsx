@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Languages, Menu, Moon, Sun, X } from "lucide-react";
 import { useLanguage } from "../../hooks/useLanguage";
 import { useTheme } from "../../hooks/useTheme";
@@ -15,8 +15,27 @@ export function Navbar() {
     setMenuOpen(false);
   }
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setMenuOpen(false);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen]);
+
   return (
     <header className="site-header">
+      {menuOpen && (
+        <button
+          className="menu-backdrop"
+          type="button"
+          aria-label={copy.menuLabel.close}
+          onClick={closeMenu}
+        />
+      )}
       <Container className="navbar">
         <a
           className="brand"
@@ -38,25 +57,30 @@ export function Navbar() {
           <Button href="#contact" className="nav-cta" onClick={closeMenu}>
             {copy.navCta}
           </Button>
+          <div className="nav-controls">
+            <button
+              className="language-toggle"
+              type="button"
+              aria-label={locale === "ar" ? "Switch language to English" : "تغيير اللغة إلى العربية"}
+              onClick={() => {
+                toggleLocale();
+                closeMenu();
+              }}
+            >
+              <Languages size={17} aria-hidden="true" />
+              <span>{copy.languageLabel}</span>
+            </button>
+            <button
+              className="theme-toggle"
+              type="button"
+              aria-label={theme === "dark" ? copy.themeLabel.light : copy.themeLabel.dark}
+              aria-pressed={theme === "dark"}
+              onClick={toggleTheme}
+            >
+              {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
+            </button>
+          </div>
         </nav>
-        <button
-          className="language-toggle"
-          type="button"
-          aria-label={locale === "ar" ? "Switch language to English" : "تغيير اللغة إلى العربية"}
-          onClick={toggleLocale}
-        >
-          <Languages size={17} aria-hidden="true" />
-          <span>{copy.languageLabel}</span>
-        </button>
-        <button
-          className="theme-toggle"
-          type="button"
-          aria-label={theme === "dark" ? copy.themeLabel.light : copy.themeLabel.dark}
-          aria-pressed={theme === "dark"}
-          onClick={toggleTheme}
-        >
-          {theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}
-        </button>
         <button
           className="menu-toggle"
           type="button"

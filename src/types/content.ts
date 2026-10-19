@@ -40,6 +40,7 @@ export interface PortfolioProject {
   openInNewTab?: boolean;
   download?: boolean;
   assetLabel: string;
+  assetNote?: string;
 }
 
 export interface PortfolioFilter {

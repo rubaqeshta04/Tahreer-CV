@@ -76,6 +76,7 @@ export function PortfolioCard({ project, copy, delay = 0 }: PortfolioCardProps) 
         ) : (
           <div className="asset-note">{project.assetLabel}</div>
         )}
+        {project.assetNote && <div className="asset-note">{project.assetNote}</div>}
       </div>
     </>
   );
