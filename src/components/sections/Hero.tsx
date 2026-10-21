@@ -1,19 +1,9 @@
-import { ArrowLeft, ArrowRight, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useLanguage } from "../../hooks/useLanguage";
 import { MagneticButton } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { ScrollReveal } from "../ui/ScrollReveal";
-
-const chartBars = [
-  "bar-one",
-  "bar-two",
-  "bar-three",
-  "bar-four",
-  "bar-five",
-  "bar-six",
-  "bar-seven",
-];
 
 export function Hero() {
   const { copy, locale } = useLanguage();
@@ -80,28 +70,16 @@ export function Hero() {
           </div>
         </div>
         <div className="hero-visual">
-          <div className="chart-backdrop" aria-hidden="true">
-            <div className="chart-grid">
-              {chartBars.map((bar) => (
-                <span className={`chart-bar ${bar}`} key={bar} />
-              ))}
-            </div>
-            <svg className="chart-line" viewBox="0 0 420 240" preserveAspectRatio="none">
-              <polyline points="12,208 78,185 136,171 192,133 250,145 312,87 365,74 409,25" />
-            </svg>
-          </div>
-          <article className="search-preview" aria-label={hero.previewLabel}>
-            <div className="search-preview-top">
-              <span className="search-preview-brand">
-                <Search size={15} /> {hero.searchLabel}
-              </span>
-              <span className="result-position">01</span>
-            </div>
-            <span className="preview-url">{hero.noLink}</span>
-            <h3>{hero.previewTitle}</h3>
-            <p>{hero.previewDescription}</p>
-            <span className="preview-disclaimer">{hero.disclaimer}</span>
-          </article>
+          <img
+            className="hero-image"
+            src="/images/hero-section.png"
+            alt={
+              locale === "ar"
+                ? "رسم توضيحي لنمو وتحسين محركات البحث"
+                : "Illustration of SEO and search growth"
+            }
+            fetchPriority="high"
+          />
         </div>
       </Container>
     </ScrollReveal>

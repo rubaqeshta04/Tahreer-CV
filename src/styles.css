@@ -120,11 +120,18 @@ button {
 }
 
 .navbar {
+  position: relative;
   display: flex;
   min-height: 78px;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
+}
+
+.nav-links-list {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .brand {
@@ -338,159 +345,13 @@ button {
   display: grid;
   min-height: 430px;
   place-items: center;
-  isolation: isolate;
 }
 
-.chart-backdrop {
-  position: absolute;
-  inset-inline: 3%;
-  inset-block: 8% 4%;
-  display: grid;
-  align-items: end;
-  padding: 22px 28px;
-  background: color-mix(in srgb, var(--color-surface) 76%, transparent);
-  border: 1px solid var(--color-border);
-  border-radius: 18px;
-  box-shadow: var(--shadow-card);
-  transform: rotate(-3deg);
-}
-
-.chart-grid {
-  position: absolute;
-  inset: 24px 26px 22px;
-  display: flex;
-  align-items: end;
-  justify-content: space-around;
-  gap: 13px;
-  border-block-end: 1px solid var(--color-border);
-}
-
-.chart-grid::before,
-.chart-grid::after {
-  position: absolute;
-  inset-inline: 0;
-  height: 1px;
-  background: var(--color-border);
-  content: "";
-}
-
-.chart-grid::before {
-  inset-block-start: 33%;
-}
-
-.chart-grid::after {
-  inset-block-start: 66%;
-}
-
-.chart-bar {
-  z-index: 1;
-  width: 8%;
-  height: 10%;
-  background: var(--color-accent-soft);
-  border-radius: 5px 5px 0 0;
-  transform-origin: bottom;
-  animation: grow-bar 950ms cubic-bezier(.2,.75,.3,1) both;
-}
-
-.bar-one { height: 26%; animation-delay: 70ms; }
-.bar-two { height: 39%; animation-delay: 150ms; background: var(--color-accent); }
-.bar-three { height: 34%; animation-delay: 230ms; }
-.bar-four { height: 53%; animation-delay: 310ms; background: var(--color-primary); }
-.bar-five { height: 61%; animation-delay: 390ms; }
-.bar-six { height: 77%; animation-delay: 470ms; background: var(--color-accent); }
-.bar-seven { height: 91%; animation-delay: 550ms; background: var(--color-primary); }
-
-.chart-line {
-  position: absolute;
-  inset: 16% 7% 15%;
-  width: 86%;
-  height: 69%;
-  overflow: visible;
-}
-
-.chart-line polyline {
-  fill: none;
-  stroke: var(--color-accent);
-  stroke-dasharray: 650;
-  stroke-dashoffset: 650;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 3;
-  animation: draw-line 1.4s 200ms ease-out forwards;
-}
-
-.search-preview {
-  position: relative;
-  z-index: 2;
-  width: min(410px, 90%);
-  padding: 21px 23px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  box-shadow: var(--shadow-card);
-  animation: preview-enter 550ms 100ms both;
-}
-
-.search-preview-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-block-end: 15px;
-  border-block-end: 1px solid var(--color-border);
-}
-
-.search-preview-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--color-muted);
-  font-size: 11px;
-}
-
-.search-preview-brand svg {
-  color: var(--color-accent);
-}
-
-.result-position {
-  display: grid;
-  width: 29px;
-  height: 29px;
-  place-items: center;
-  color: var(--color-primary-foreground);
-  background: var(--color-primary);
-  border-radius: 50%;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.preview-url {
+.hero-image {
   display: block;
-  margin-block-start: 16px;
-  color: var(--color-muted);
-  font-size: 10px;
-}
-
-.search-preview h3 {
-  margin: 5px 0;
-  color: var(--color-primary);
-  font-size: 17px;
-  font-weight: 600;
-}
-
-.search-preview > p {
-  margin: 0;
-  color: var(--color-muted);
-  font-size: 11px;
-  line-height: 1.9;
-}
-
-.preview-disclaimer {
-  display: block;
-  margin-block-start: 14px;
-  padding-block-start: 10px;
-  color: var(--color-muted);
-  border-block-start: 1px solid var(--color-border);
-  font-size: 10px;
+  width: min(100%, 560px);
+  max-height: 430px;
+  object-fit: contain;
 }
 
 .section {
@@ -1322,6 +1183,10 @@ body,
     gap: 12px;
   }
 
+  .nav-links-list {
+    display: none;
+  }
+
   .brand {
     margin-inline-end: auto;
   }
@@ -1432,16 +1297,6 @@ body,
   .hero-visual {
     min-height: 335px;
     margin-block-start: 8px;
-  }
-
-  .chart-backdrop {
-    inset-inline: 8%;
-    inset-block: 12% 4%;
-  }
-
-  .search-preview {
-    width: min(390px, 88%);
-    padding: 18px;
   }
 
   .section {
@@ -1589,19 +1444,6 @@ body,
   }
 }
 
-@keyframes grow-bar {
-  from { transform: scaleY(.08); }
-  to { transform: scaleY(1); }
-}
-
-@keyframes draw-line {
-  to { stroke-dashoffset: 0; }
-}
-
-@keyframes preview-enter {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 @media (prefers-reduced-motion: reduce) {
   *,

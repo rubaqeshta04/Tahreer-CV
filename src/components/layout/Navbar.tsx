@@ -40,20 +40,26 @@ export function Navbar() {
         <a
           className="brand"
           href="#home"
-          aria-label={locale === "ar" ? "تحرير حامد حمدونة — الرئيسية" : "Tahreer Hamed Hamadouna — Home"}
+          aria-label={
+            locale === "ar"
+              ? "تحرير حامد حمدونة — الرئيسية"
+              : "Tahreer Hamed Hamadouna — Home"
+          }
         >
           <Logo />
         </a>
-        <nav
-          className={`nav-links ${menuOpen ? "is-open" : ""}`}
-          id="main-navigation"
-          aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"}
-        >
+        <div className="flex items-center justify-between gap-4 nav-links-list">
           {copy.navigation.map((item) => (
             <a key={item.href} href={item.href} onClick={closeMenu}>
               {item.label}
             </a>
           ))}
+        </div>
+        <nav
+          className={`nav-links ${menuOpen ? "is-open" : ""}`}
+          id="main-navigation"
+          aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"}
+        >
           <Button href="#contact" className="nav-cta" onClick={closeMenu}>
             {copy.navCta}
           </Button>
@@ -61,7 +67,11 @@ export function Navbar() {
             <button
               className="language-toggle"
               type="button"
-              aria-label={locale === "ar" ? "Switch language to English" : "تغيير اللغة إلى العربية"}
+              aria-label={
+                locale === "ar"
+                  ? "Switch language to English"
+                  : "تغيير اللغة إلى العربية"
+              }
               onClick={() => {
                 toggleLocale();
                 closeMenu();
@@ -73,7 +83,9 @@ export function Navbar() {
             <button
               className="theme-toggle"
               type="button"
-              aria-label={theme === "dark" ? copy.themeLabel.light : copy.themeLabel.dark}
+              aria-label={
+                theme === "dark" ? copy.themeLabel.light : copy.themeLabel.dark
+              }
               aria-pressed={theme === "dark"}
               onClick={toggleTheme}
             >
