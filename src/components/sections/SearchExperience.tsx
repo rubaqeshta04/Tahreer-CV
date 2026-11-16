@@ -50,7 +50,12 @@ interface SearchExperienceProps {
 }
 
 export function SearchExperience({ renderResults }: SearchExperienceProps) {
-  const [view, setView] = useState<SearchView>("simulator");
+  const [view, setView] = useState<SearchView>(() =>
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 700px)").matches
+      ? "results"
+      : "simulator",
+  );
   const reduceMotion = useReducedMotion();
   const showResults = useCallback(() => setView("results"), []);
 

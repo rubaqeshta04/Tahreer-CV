@@ -48,18 +48,16 @@ export function Navbar() {
         >
           <Logo />
         </a>
-        <div className="flex items-center justify-between gap-4 nav-links-list">
-          {copy.navigation.map((item) => (
-            <a key={item.href} href={item.href} onClick={closeMenu}>
-              {item.label}
-            </a>
-          ))}
-        </div>
         <nav
           className={`nav-links ${menuOpen ? "is-open" : ""}`}
           id="main-navigation"
           aria-label={locale === "ar" ? "التنقل الرئيسي" : "Main navigation"}
         >
+          {copy.navigation.map((item) => (
+            <a key={item.href} href={item.href} onClick={closeMenu}>
+              {item.label}
+            </a>
+          ))}
           <Button href="#contact" className="nav-cta" onClick={closeMenu}>
             {copy.navCta}
           </Button>
